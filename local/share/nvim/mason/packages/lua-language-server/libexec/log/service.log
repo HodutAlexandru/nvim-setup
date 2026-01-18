@@ -1,0 +1,28 @@
+[15:26:33.230][info] [#0:/home/jarvis/.local/share/nvim/mason/packages/lua-language-server/libexec/main.lua:71]: Lua Lsp startup, root: 	/home/jarvis/.local/share/nvim/mason/packages/lua-language-server/libexec
+[15:26:33.230][info] [#0:/home/jarvis/.local/share/nvim/mason/packages/lua-language-server/libexec/main.lua:72]: ROOT:	/home/jarvis/.local/share/nvim/mason/packages/lua-language-server/libexec
+[15:26:33.230][info] [#0:/home/jarvis/.local/share/nvim/mason/packages/lua-language-server/libexec/main.lua:73]: LOGPATH:	/home/jarvis/.local/share/nvim/mason/packages/lua-language-server/libexec/log
+[15:26:33.230][info] [#0:/home/jarvis/.local/share/nvim/mason/packages/lua-language-server/libexec/main.lua:74]: METAPATH:	/home/jarvis/.local/share/nvim/mason/packages/lua-language-server/libexec/meta
+[15:26:33.230][info] [#0:/home/jarvis/.local/share/nvim/mason/packages/lua-language-server/libexec/main.lua:75]: VERSION:	3.16.4
+[15:26:33.249][info] [#0:script/proto/proto.lua:260]: Listen Mode: stdio
+[15:26:33.249][info] [#0:script/service/service.lua:145]: 
+========= Medical Examination Report =========
+    --------------- Memory ---------------
+        Total: 1.898 MB
+        # 00 : 1.898 MB
+        # 01 : 0.000 MB
+        # 02 : 0.000 MB
+        # 03 : 0.000 MB
+        # 04 : 0.000 MB
+    --------------- Coroutine ---------------
+        Total:     0
+        Running:   0
+        Suspended: 0
+        Normal:    0
+        Dead:      0
+    --------------- Cache ---------------
+        Total: 1
+        Dead:  0
+    ---------------  RPC  ---------------
+        Holdon:   0
+        Waiting:  0
+==============================================
