@@ -557,7 +557,14 @@ require('lazy').setup({
             -- Helper function to safely map jdtls functions
             local safe_map = function(keys, func_name, desc, mode)
               if jdtls[func_name] and type(jdtls[func_name]) == 'function' then
-                map(keys, jdtls[func_name], desc, mode)
+                -- For visual mode, wrap the function to properly pass visual selection
+                if mode == 'v' then
+                  map(keys, function()
+                    jdtls[func_name](true)
+                  end, desc, mode)
+                else
+                  map(keys, jdtls[func_name], desc, mode)
+                end
               end
             end
 
