@@ -176,6 +176,10 @@ vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 -- Diagnostic keymaps
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
 
+vim.keymap.set("n", "<leader>ld", function()
+  vim.cmd("terminal lazydocker")
+end, { desc = "Open Lazydocker" })
+
 -- Exit terminal mode in the builtin terminal with a shortcut that is a bit easier
 -- for people to discover. Otherwise, you normally need to press <C-\><C-n>, which
 -- is not what someone will guess without a bit more experience.
@@ -223,7 +227,7 @@ vim.api.nvim_create_autocmd('TextYankPost', {
 --    See `:help lazy.nvim.txt` or https://github.com/folke/lazy.nvim for more info
 local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
 if not (vim.uv or vim.loop).fs_stat(lazypath) then
-  local lazyrepo = 'git@github.com/folke/lazy.nvim.git'
+  local lazyrepo = 'https://github.com/folke/lazy.nvim.git'
   local out = vim.fn.system { 'git', 'clone', '--filter=blob:none', '--branch=stable', lazyrepo, lazypath }
   if vim.v.shell_error ~= 0 then
     error('Error cloning lazy.nvim:\n' .. out)
@@ -423,6 +427,7 @@ require('lazy').setup({
       -- Enable Telescope extensions if they are installed
       pcall(require('telescope').load_extension, 'fzf')
       pcall(require('telescope').load_extension, 'ui-select')
+      pcall(require, "custom.keymaps")
 
       -- See `:help telescope.builtin`
       local builtin = require 'telescope.builtin'
@@ -475,7 +480,9 @@ require('lazy').setup({
       },
     },
   },
-  { 'mfussenegger/nvim-jdtls' },
+  {
+    "mfussenegger/nvim-jdtls",
+  },
   {
     -- Main LSP Configuration
     'neovim/nvim-lspconfig',
@@ -538,7 +545,7 @@ require('lazy').setup({
 
           -- jdtls (Java) keymaps: only when the attached LSP client is jdtls
           if client and client.name == 'jdtls' then
-            local jdtls = require 'jdtls'
+            local jdtls = require 'jdtls'  
 
             -- Imports / refactors
             map('<leader>jo', jdtls.organize_imports, '[J]ava [O]rganize imports')
@@ -560,6 +567,8 @@ require('lazy').setup({
             map('<leader>jc', jdtls.compile, '[J]ava [C]ompile')
             map('<leader>jr', jdtls.restart, '[J]ava [R]estart jdtls')
           end
+
+
 
           -- Rename the variable under your cursor.
           --  Most Language Servers support renaming across files, etc.
@@ -701,7 +710,8 @@ require('lazy').setup({
         -- gopls = {},
         -- pyright = {},
         -- rust_analyzer = {},
-        -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
+        -- jsonls = {},
+	-- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
         --
         -- Some languages (like typescript) have entire language plugins that can be useful:
         --    https://github.com/pmizio/typescript-tools.nvim
@@ -723,6 +733,17 @@ require('lazy').setup({
               -- diagnostics = { disable = { 'missing-fields' } },
             },
           },
+          bashls = {},
+          jdtls = {},
+          yamlls = {
+            settings = {
+              yaml = {
+                keyOrdering = false, -- don't warn about key order
+                validate = true,
+                format = { enable = false }, -- let Prettier handle formatting
+              },
+            },
+          },
         },
       }
 
@@ -739,14 +760,29 @@ require('lazy').setup({
       --
       -- You can add other tools here that you want Mason to install
       -- for you, so that they are available from within Neovim.
-      local ensure_installed = vim.tbl_keys(servers or {})
-      vim.list_extend(ensure_installed, {
-        'stylua', -- Used to format Lua code
-      })
-      require('mason-tool-installer').setup { ensure_installed = ensure_installed }
+      require('mason-tool-installer').setup({
+        ensure_installed = {
+          -- LSP servers
+          "bash-language-server",         -- bashls
+          "eslint-lsp",                   -- eslint
+          "jdtls",
+          "json-lsp",                     -- jsonls
+          "lemminx",
+          "lua-language-server",          -- lua_ls
+          "typescript-language-server",   -- ts_ls
+          "yaml-language-server",         -- yamlls
 
+          -- Formatters / Linters
+          "prettier",
+          "shellcheck",
+          "shfmt",
+          "stylua",
+        },
+        auto_update = false,
+        run_on_start = true,
+      })
       require('mason-lspconfig').setup {
-        ensure_installed = {}, -- explicitly set to an empty table (Kickstart populates installs via mason-tool-installer)
+        ensure_installed = {'bash'}, -- explicitly set to an empty table (Kickstart populates installs via mason-tool-installer)
         automatic_installation = false,
         handlers = {
           function(server_name)
@@ -781,11 +817,31 @@ require('lazy').setup({
       format_on_save = false,
       formatters_by_ft = {
         lua = { 'stylua' },
-        -- Conform can also run multiple formatters sequentially
-        -- python = { "isort", "black" },
-        --
-        -- You can use 'stop_after_first' to run the first available formatter from the list
-        -- javascript = { "prettierd", "prettier", stop_after_first = true },
+
+        sh = { 'shfmt' },
+        bash = { 'shfmt' },
+
+  	    json = { 'prettier' },
+  	    jsonc = { 'prettier' },
+
+  	    javascript = { 'prettier' },
+  	    javascriptreact = { 'prettier' },
+
+  	    typescript = { 'prettier' },
+  	    typescriptreact = { 'prettier' },
+
+        yaml = { "prettier" },
+        yml = { "prettier" }, -- optional; most files are 'yaml' anyway
+
+	      xml = { 'xmllint' },
+      },
+
+      formatters = {
+    	xmllint = {
+      	  command = "xmllint",
+      	  args = { "--format", "-" },
+      	  stdin = true,
+    	},
       },
     },
   },
