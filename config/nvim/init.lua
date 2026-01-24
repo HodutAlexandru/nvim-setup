@@ -549,30 +549,35 @@ require('lazy').setup({
           -- jdtls (Java) keymaps: only when the attached LSP client is jdtls
           if client and client.name == 'jdtls' then
             local ok, jdtls = pcall(require, 'jdtls')
-            if not ok then
+            if not ok or not jdtls then
               vim.notify('jdtls module not available', vim.log.levels.WARN)
               return
-            end  
+            end
+
+            -- Helper function to safely map jdtls functions
+            local safe_map = function(keys, func_name, desc, mode)
+              if jdtls[func_name] and type(jdtls[func_name]) == 'function' then
+                map(keys, jdtls[func_name], desc, mode)
+              end
+            end
 
             -- Imports / refactors
-            map('<leader>jo', jdtls.organize_imports, '[J]ava [O]rganize imports')
-
-            map('<leader>ji', jdtls.inline_variable, '[J]ava [I]nline variable')
-
-            map('<leader>js', jdtls.super_implementation, '[J]ava [S]uper implementation')
+            safe_map('<leader>jo', 'organize_imports', '[J]ava [O]rganize imports')
+            safe_map('<leader>ji', 'inline_variable', '[J]ava [I]nline variable')
+            safe_map('<leader>js', 'super_implementation', '[J]ava [S]uper implementation')
 
             -- Extract refactors (visual mode)
-            map('<leader>je', jdtls.extract_variable, '[J]ava [E]xtract variable', 'v')
-            map('<leader>jE', jdtls.extract_constant, '[J]ava Extract [C]onstant', 'v')
-            map('<leader>jm', jdtls.extract_method, '[J]ava Extract [M]ethod', 'v')
+            safe_map('<leader>je', 'extract_variable', '[J]ava [E]xtract variable', 'v')
+            safe_map('<leader>jE', 'extract_constant', '[J]ava Extract [C]onstant', 'v')
+            safe_map('<leader>jm', 'extract_method', '[J]ava Extract [M]ethod', 'v')
 
             -- Tests
-            map('<leader>jt', jdtls.test_nearest_method, '[J]ava [T]est nearest')
-            map('<leader>jT', jdtls.test_class, '[J]ava [T]est class')
+            safe_map('<leader>jt', 'test_nearest_method', '[J]ava [T]est nearest')
+            safe_map('<leader>jT', 'test_class', '[J]ava [T]est class')
 
             -- Build / server
-            map('<leader>jc', jdtls.compile, '[J]ava [C]ompile')
-            map('<leader>jr', jdtls.restart, '[J]ava [R]estart jdtls')
+            safe_map('<leader>jc', 'compile', '[J]ava [C]ompile')
+            safe_map('<leader>jr', 'restart', '[J]ava [R]estart jdtls')
           end
 
 
