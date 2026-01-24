@@ -548,7 +548,11 @@ require('lazy').setup({
 
           -- jdtls (Java) keymaps: only when the attached LSP client is jdtls
           if client and client.name == 'jdtls' then
-            local jdtls = require 'jdtls'  
+            local ok, jdtls = pcall(require, 'jdtls')
+            if not ok then
+              vim.notify('jdtls module not available', vim.log.levels.WARN)
+              return
+            end  
 
             -- Imports / refactors
             map('<leader>jo', jdtls.organize_imports, '[J]ava [O]rganize imports')
