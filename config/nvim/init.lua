@@ -733,15 +733,15 @@ require('lazy').setup({
               -- diagnostics = { disable = { 'missing-fields' } },
             },
           },
-          bashls = {},
-          jdtls = {},
-          yamlls = {
-            settings = {
-              yaml = {
-                keyOrdering = false, -- don't warn about key order
-                validate = true,
-                format = { enable = false }, -- let Prettier handle formatting
-              },
+        },
+        bashls = {},
+        jdtls = {},
+        yamlls = {
+          settings = {
+            yaml = {
+              keyOrdering = false, -- don't warn about key order
+              validate = true,
+              format = { enable = false }, -- let Prettier handle formatting
             },
           },
         },
@@ -780,10 +780,13 @@ require('lazy').setup({
         },
         auto_update = false,
         run_on_start = true,
+        integrations = {
+          ['mason-lspconfig'] = true,
+        },
       })
       require('mason-lspconfig').setup {
-        ensure_installed = {'bash'}, -- explicitly set to an empty table (Kickstart populates installs via mason-tool-installer)
-        automatic_installation = false,
+        ensure_installed = { 'bashls', 'lua_ls', 'jdtls', 'yamlls' },
+        automatic_installation = true,
         handlers = {
           function(server_name)
             local server = servers[server_name] or {}
