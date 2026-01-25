@@ -549,35 +549,32 @@ require('lazy').setup({
           -- jdtls (Java) keymaps: only when the attached LSP client is jdtls
           if client and client.name == 'jdtls' then
             local ok, jdtls = pcall(require, 'jdtls')
-            if not ok or not jdtls then
-              vim.notify('jdtls module not available', vim.log.levels.WARN)
-              return
-            end
-
-            -- Helper function to safely map jdtls functions
-            local safe_map = function(keys, func_name, desc, mode)
-              if jdtls[func_name] and type(jdtls[func_name]) == 'function' then
-                map(keys, jdtls[func_name], desc, mode)
+            if ok and jdtls then
+              -- Helper function to safely map jdtls functions
+              local safe_map = function(keys, func_name, desc, mode)
+                if jdtls[func_name] and type(jdtls[func_name]) == 'function' then
+                  map(keys, jdtls[func_name], desc, mode)
+                end
               end
+
+              -- Imports / refactors
+              safe_map('<leader>jo', 'organize_imports', '[J]ava [O]rganize imports')
+              safe_map('<leader>ji', 'inline_variable', '[J]ava [I]nline variable')
+              safe_map('<leader>js', 'super_implementation', '[J]ava [S]uper implementation')
+
+              -- Extract refactors (visual mode) - these work with visual selections
+              safe_map('<leader>je', 'extract_variable', '[J]ava [E]xtract variable', 'v')
+              safe_map('<leader>jE', 'extract_constant', '[J]ava Extract [C]onstant', 'v')
+              safe_map('<leader>jm', 'extract_method', '[J]ava Extract [M]ethod', 'v')
+
+              -- Tests
+              safe_map('<leader>jt', 'test_nearest_method', '[J]ava [T]est nearest')
+              safe_map('<leader>jT', 'test_class', '[J]ava [T]est class')
+
+              -- Build / server
+              safe_map('<leader>jc', 'compile', '[J]ava [C]ompile')
+              safe_map('<leader>jr', 'restart', '[J]ava [R]estart jdtls')
             end
-
-            -- Imports / refactors
-            safe_map('<leader>jo', 'organize_imports', '[J]ava [O]rganize imports')
-            safe_map('<leader>ji', 'inline_variable', '[J]ava [I]nline variable')
-            safe_map('<leader>js', 'super_implementation', '[J]ava [S]uper implementation')
-
-            -- Extract refactors (visual mode)
-            safe_map('<leader>je', 'extract_variable', '[J]ava [E]xtract variable', 'v')
-            safe_map('<leader>jE', 'extract_constant', '[J]ava Extract [C]onstant', 'v')
-            safe_map('<leader>jm', 'extract_method', '[J]ava Extract [M]ethod', 'v')
-
-            -- Tests
-            safe_map('<leader>jt', 'test_nearest_method', '[J]ava [T]est nearest')
-            safe_map('<leader>jT', 'test_class', '[J]ava [T]est class')
-
-            -- Build / server
-            safe_map('<leader>jc', 'compile', '[J]ava [C]ompile')
-            safe_map('<leader>jr', 'restart', '[J]ava [R]estart jdtls')
           end
 
 
